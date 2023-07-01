@@ -20,20 +20,13 @@ public class JpaMain {
 //            findMember(em);
 //            updateMember(em);
 //            findResultList(em);
-
 //            entityManaged(em);
+//            entityManagerCash1Test1(em);
+//            entityManagerCash1Test2(em);
 
-            Member member = new Member();
-            //비영속
-            member.setId(102L);
-            member.setName("TestJpa");
-
-            //영속
-            em.persist(member);
-
-            // 영속성 컨텍스트의 1차 캐시에서 데이터 조회 (DB에서 조회 X)
-            Member findMember = em.find(Member.class, 102L);
-            System.out.println("findMember = "+ findMember.getName());
+            //영속성
+            Member member = em.find(Member.class, 150L);
+            member.setName("ZZZZZ"); // update 쿼리 무조건 발생
 
             tx.commit();
 
@@ -46,6 +39,31 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void entityManagerCash1Test2(EntityManager em) {
+        //비영속
+        Member member1 = new Member(150L, "A");
+        Member member2 = new Member(160L, "B");
+
+        //영속
+        em.persist(member1);
+        em.persist(member2);
+        System.out.println("=================");
+    }
+
+    private static void entityManagerCash1Test1(EntityManager em) {
+        Member member = new Member();
+        //비영속
+        member.setId(102L);
+        member.setName("TestJpa");
+
+        //영속
+        em.persist(member);
+
+        // 영속성 컨텍스트의 1차 캐시에서 데이터 조회 (DB에서 조회 X)
+        Member findMember = em.find(Member.class, 102L);
+        System.out.println("findMember = "+ findMember.getName());
     }
 
     private static void entityManaged(EntityManager em) {
