@@ -24,13 +24,17 @@ public class JpaMain {
 //            entityManagerCash1Test1(em);
 //            entityManagerCash1Test2(em);
 //            updateMember2(em);
+//            flushTest1(em);
 
-            Member member = new Member(200L, "member200");
-            em.persist(member);
+            //영속성 컨텍스트
+            Member member = em.find(Member.class, 150L);
+            member.setName("AAAA");
 
-            // 영속성 컨텍스트를 비우지 않음
-            em.flush(); // 영속성 컨텍스트의 변경 내용을 데이터베이스에 동기화
-            System.out.println("==================");
+            em.detach(member); // 준영속성 컨텍스트 (영속성 컨텍스트가 관리하지 않는 상태)
+//            em.clear(); // 영속성 컨텍스트 초기화
+
+            System.out.println("======================");
+
 
             tx.commit();
 
@@ -43,6 +47,15 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void flushTest1(EntityManager em) {
+        Member member = new Member(200L, "member200");
+        em.persist(member);
+
+        // 영속성 컨텍스트를 비우지 않음
+        em.flush(); // 영속성 컨텍스트의 변경 내용을 데이터베이스에 동기화
+        System.out.println("==================");
     }
 
     private static void updateMember2(EntityManager em) {
