@@ -25,13 +25,14 @@ public class JpaMain {
 //            entityManagerCash1Test2(em);
 //            updateMember2(em);
 //            flushTest1(em);
+//            detachAndClearTest(em);
 
-            //영속성 컨텍스트
-            Member member = em.find(Member.class, 150L);
-            member.setName("AAAA");
+            Member member = new Member();
+            member.setId(4L);
+            member.setUsername("D");
+            member.setRoleType(RoleType.ADMIN);
 
-            em.detach(member); // 준영속성 컨텍스트 (영속성 컨텍스트가 관리하지 않는 상태)
-//            em.clear(); // 영속성 컨텍스트 초기화
+            em.persist(member);
 
             System.out.println("======================");
 
@@ -49,9 +50,18 @@ public class JpaMain {
         emf.close();
     }
 
+    private static void detachAndClearTest(EntityManager em) {
+        //영속성 컨텍스트
+        Member member = em.find(Member.class, 150L);
+//            member.setName("AAAA");
+
+        em.detach(member); // 준영속성 컨텍스트 (영속성 컨텍스트가 관리하지 않는 상태)
+//            em.clear(); // 영속성 컨텍스트 초기화
+    }
+
     private static void flushTest1(EntityManager em) {
-        Member member = new Member(200L, "member200");
-        em.persist(member);
+//        Member member = new Member(200L, "member200");
+//        em.persist(member);
 
         // 영속성 컨텍스트를 비우지 않음
         em.flush(); // 영속성 컨텍스트의 변경 내용을 데이터베이스에 동기화
@@ -61,39 +71,39 @@ public class JpaMain {
     private static void updateMember2(EntityManager em) {
         //영속성
         Member member = em.find(Member.class, 150L);
-        member.setName("ZZZZZ"); // update 쿼리 무조건 발생
+//        member.setName("ZZZZZ"); // update 쿼리 무조건 발생
     }
 
     private static void entityManagerCash1Test2(EntityManager em) {
         //비영속
-        Member member1 = new Member(150L, "A");
-        Member member2 = new Member(160L, "B");
+//        Member member1 = new Member(150L, "A");
+//        Member member2 = new Member(160L, "B");
 
         //영속
-        em.persist(member1);
-        em.persist(member2);
+//        em.persist(member1);
+//        em.persist(member2);
         System.out.println("=================");
     }
 
     private static void entityManagerCash1Test1(EntityManager em) {
         Member member = new Member();
         //비영속
-        member.setId(102L);
-        member.setName("TestJpa");
+//        member.setId(102L);
+//        member.setName("TestJpa");
 
         //영속
         em.persist(member);
 
         // 영속성 컨텍스트의 1차 캐시에서 데이터 조회 (DB에서 조회 X)
         Member findMember = em.find(Member.class, 102L);
-        System.out.println("findMember = "+ findMember.getName());
+//        System.out.println("findMember = "+ findMember.getName());
     }
 
     private static void entityManaged(EntityManager em) {
         //비영속
         Member member = em.find(Member.class, 1L);
-        member.setId(100L);
-        member.setName("TestJpa");
+//        member.setId(100L);
+//        member.setName("TestJpa");
 
         //영속
         em.persist(member);
@@ -111,25 +121,25 @@ public class JpaMain {
                 .getResultList();
 
         for (Member member : resultList) {
-            System.out.println("member.name = " + member.getName());
+//            System.out.println("member.name = " + member.getName());
         }
     }
 
     private static void updateMember(EntityManager em) {
         Member member = em.find(Member.class, 1L);
-        member.setName("helloJpa");
+//        member.setName("helloJpa");
     }
 
     private static void findMember(EntityManager em) {
         Member member = em.find(Member.class, 1L);
-        System.out.println("findMember.id = " + member.getId());
-        System.out.println("findMember.name = " + member.getName());
+//        System.out.println("findMember.id = " + member.getId());
+//        System.out.println("findMember.name = " + member.getName());
     }
 
     private static void insertMember(EntityManager em) {
         Member member = new Member();
-        member.setId(1L);
-        member.setName("HelloA");
+//        member.setId(1L);
+//        member.setName("HelloA");
 
         em.persist(member);
     }
