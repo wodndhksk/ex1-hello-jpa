@@ -3,12 +3,12 @@ package hellojpa;
 import javax.persistence.*;
 
 @Entity
-//@TableGenerator(
-//        name = "MEMBER_SEQ_GENERATOR"
-//        ,table = "MY_SEQUENCE"
-//        ,pkColumnValue = "MEMBER"
-//        ,allocationSize = 1
-//)
+@TableGenerator(
+        name = "MEMBER_SEQ_GENERATOR"
+        ,table = "MY_SEQUENCE"
+        ,pkColumnValue = "MEMBER"
+        ,allocationSize = 1
+)
 public class MemberTableStrategy {
     @Id //@GeneratedValue(strategy = GenerationType.TABLE, generator = "MEMBER_SEQ_GENERATOR")
     private Long id;
