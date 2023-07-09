@@ -36,3 +36,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/.idea/sonarlint/issuestore/index.pb
+/.idea/sonarlint/securityhotspotstore/3/8/3818751ba7a7e2bbfde51b6c3126a02f97f5a644
+/.idea/sonarlint/securityhotspotstore/f/d/fd68fd8c0388b07c61445afa503c8ec018eab4c0
+/.idea/sonarlint/securityhotspotstore/index.pb
+/.idea/uiDesigner.xml
