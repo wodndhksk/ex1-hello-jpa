@@ -26,13 +26,30 @@ public class JpaMain {
 //            updateMember2(em);
 //            flushTest1(em);
 //            detachAndClearTest(em);
+//            columnMappingTest1(em);
+//            generationTypeIdentityStrategy(em);
+//            generationTypeTableStrategy(em);
 
-            Member member = new Member();
-            member.setId(4L);
-            member.setUsername("D");
-            member.setRoleType(RoleType.ADMIN);
+            MemberSeqStrategy mb1 = new MemberSeqStrategy();
+            mb1.setUsername("A");
 
-            em.persist(member);
+            MemberSeqStrategy mb2 = new MemberSeqStrategy();
+            mb2.setUsername("B");
+
+            MemberSeqStrategy mb3 = new MemberSeqStrategy();
+            mb3.setUsername("C");
+
+            System.out.println("===========================");
+
+            em.persist(mb1);
+            em.persist(mb2);
+            em.persist(mb3);
+
+            System.out.println("mb1 = " + mb1.getId());
+            System.out.println("mb2 = " + mb2.getId());
+            System.out.println("mb3 = " + mb3.getId());
+
+            System.out.println("===========================");
 
             System.out.println("======================");
 
@@ -48,6 +65,28 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void generationTypeTableStrategy(EntityManager em) {
+        MemberTableStrategy mb = new MemberTableStrategy();
+        mb.setUsername("F");
+
+        em.persist(mb);
+    }
+
+    private static void generationTypeIdentityStrategy(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("C");
+        em.persist(member);
+    }
+
+    private static void columnMappingTest1(EntityManager em) {
+        Member member = new Member();
+        member.setId(4L);
+        member.setUsername("D");
+        member.setRoleType(RoleType.ADMIN);
+
+        em.persist(member);
     }
 
     private static void detachAndClearTest(EntityManager em) {

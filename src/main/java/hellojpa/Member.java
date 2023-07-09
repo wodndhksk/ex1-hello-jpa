@@ -1,20 +1,24 @@
 package hellojpa;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 public class Member {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name = "name")
     private String username;
     private Integer age;
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+//    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private LocalDateTime createdDate;
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedDate;
     @Lob
@@ -55,11 +59,11 @@ public class Member {
         this.roleType = roleType;
     }
 
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
