@@ -29,30 +29,25 @@ public class JpaMain {
 //            columnMappingTest1(em);
 //            generationTypeIdentityStrategy(em);
 //            generationTypeTableStrategy(em);
+//            seqStrategy(em);
 
-            MemberSeqStrategy mb1 = new MemberSeqStrategy();
-            mb1.setUsername("A");
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
 
-            MemberSeqStrategy mb2 = new MemberSeqStrategy();
-            mb2.setUsername("B");
+            MemberOwner member = new MemberOwner();
+            member.setName("member1");
+//            member.setTeamId(team.getId());
+            member.setTeam(team);
+            em.persist(member);
 
-            MemberSeqStrategy mb3 = new MemberSeqStrategy();
-            mb3.setUsername("C");
-
-            System.out.println("===========================");
-
-            em.persist(mb1);
-            em.persist(mb2);
-            em.persist(mb3);
-
-            System.out.println("mb1 = " + mb1.getId());
-            System.out.println("mb2 = " + mb2.getId());
-            System.out.println("mb3 = " + mb3.getId());
+            MemberOwner findMember = em.find(MemberOwner.class, member.getId());
+//            Long findTeamId = findMember.getTeamId();
+//            Team findTeam = em.find(Team.class, findTeamId);
+            Team findTeam = findMember.getTeam();
+            System.out.println("findTeam.getName() = " + findTeam.getName());
 
             System.out.println("===========================");
-
-            System.out.println("======================");
-
 
             tx.commit();
 
@@ -65,6 +60,27 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void seqStrategy(EntityManager em) {
+        MemberSeqStrategy mb1 = new MemberSeqStrategy();
+        mb1.setUsername("A");
+
+        MemberSeqStrategy mb2 = new MemberSeqStrategy();
+        mb2.setUsername("B");
+
+        MemberSeqStrategy mb3 = new MemberSeqStrategy();
+        mb3.setUsername("C");
+
+        System.out.println("===========================");
+
+        em.persist(mb1);
+        em.persist(mb2);
+        em.persist(mb3);
+
+        System.out.println("mb1 = " + mb1.getId());
+        System.out.println("mb2 = " + mb2.getId());
+        System.out.println("mb3 = " + mb3.getId());
     }
 
     private static void generationTypeTableStrategy(EntityManager em) {
