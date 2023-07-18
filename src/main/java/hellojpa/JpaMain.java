@@ -30,22 +30,27 @@ public class JpaMain {
 //            generationTypeIdentityStrategy(em);
 //            generationTypeTableStrategy(em);
 //            seqStrategy(em);
+//            getTeamInMember(em);
 
             Team team = new Team();
             team.setName("TeamA");
             em.persist(team);
 
             MemberOwner member = new MemberOwner();
-            member.setName("member1");
+            member.setUsername("member1");
 //            member.setTeamId(team.getId());
             member.setTeam(team);
             em.persist(member);
 
-            MemberOwner findMember = em.find(MemberOwner.class, member.getId());
-//            Long findTeamId = findMember.getTeamId();
-//            Team findTeam = em.find(Team.class, findTeamId);
-            Team findTeam = findMember.getTeam();
-            System.out.println("findTeam.getName() = " + findTeam.getName());
+            em.flush();
+            em.clear();
+
+            MemberOwner finMember = em.find(MemberOwner.class, member.getId());
+            List<MemberOwner> members = finMember.getTeam().getMembers();
+
+            for(MemberOwner m : members){
+                System.out.println("memberOwner = " + m.getUsername());
+            }
 
             System.out.println("===========================");
 
@@ -60,6 +65,24 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void getTeamInMember(EntityManager em) {
+        Team team = new Team();
+        team.setName("TeamA");
+        em.persist(team);
+
+        MemberOwner member = new MemberOwner();
+        member.setUsername("member1");
+//            member.setTeamId(team.getId());
+        member.setTeam(team);
+        em.persist(member);
+
+        MemberOwner findMember = em.find(MemberOwner.class, member.getId());
+//            Long findTeamId = findMember.getTeamId();
+//            Team findTeam = em.find(Team.class, findTeamId);
+        Team findTeam = findMember.getTeam();
+        System.out.println("findTeam.getName() = " + findTeam.getName());
     }
 
     private static void seqStrategy(EntityManager em) {
