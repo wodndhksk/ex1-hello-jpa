@@ -1,5 +1,7 @@
 package hellojpa;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -31,6 +33,7 @@ public class JpaMain {
 //            generationTypeTableStrategy(em);
 //            seqStrategy(em);
 //            getTeamInMember(em);
+//            setOwnerOfRelationship(em);
 
             Team team = new Team();
             team.setName("TeamA");
@@ -38,21 +41,33 @@ public class JpaMain {
 
             MemberOwner member = new MemberOwner();
             member.setUsername("member1");
-//            member.setTeamId(team.getId());
             member.setTeam(team);
             em.persist(member);
 
-            em.flush();
-            em.clear();
+            System.out.println("+++++++++++");
+            System.out.println(team.getId());
+            System.out.println("+++++++++++");
+            System.out.println(member.getId());
+            System.out.println("+++++++++++");
+            System.out.println(team.getId());
+            System.out.println("+++++++++++");
 
-            MemberOwner finMember = em.find(MemberOwner.class, member.getId());
-            List<MemberOwner> members = finMember.getTeam().getMembers();
-
-            for(MemberOwner m : members){
-                System.out.println("memberOwner = " + m.getUsername());
-            }
+            team.getMembers().add(member);
+//
+//            em.flush();
+//            em.clear();
 
             System.out.println("===========================");
+            Team findTeam = em.find(Team.class, team.getId());
+            System.out.println("findTeam = " + findTeam.getMembers().get(0).getId());
+            List<MemberOwner> members = findTeam.getMembers();
+            System.out.println("members = " + members.get(0).getId());
+            System.out.println("members = " + members.get(0).getUsername());
+            for(MemberOwner m : members){
+                System.out.println("m = " + m.getUsername());
+            }
+            System.out.println("===========================");
+
 
             tx.commit();
 
@@ -65,6 +80,28 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void setOwnerOfRelationship(EntityManager em) {
+        Team team = new Team();
+        team.setName("TeamA");
+        em.persist(team);
+
+        MemberOwner member = new MemberOwner();
+        member.setUsername("member1");
+//            member.setTeamId(team.getId());
+        member.setTeam(team);
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        MemberOwner finMember = em.find(MemberOwner.class, member.getId());
+        List<MemberOwner> members = finMember.getTeam().getMembers();
+
+        for(MemberOwner m : members){
+            System.out.println("memberOwner = " + m.getUsername());
+        }
     }
 
     private static void getTeamInMember(EntityManager em) {

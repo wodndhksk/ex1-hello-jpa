@@ -1,7 +1,14 @@
 package hellojpa;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.*;
 
+//@ToString // 양방 매핑시 무한루프 주의! (MemberOwner 와 Team 에 둘다 선언시 무한루프) StackOverflowError 발생
+@Getter
+@Setter
 @Entity
 public class MemberOwner {
     @Id
@@ -16,27 +23,5 @@ public class MemberOwner {
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
 }
