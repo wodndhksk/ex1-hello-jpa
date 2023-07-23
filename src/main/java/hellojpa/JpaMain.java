@@ -34,30 +34,20 @@ public class JpaMain {
 //            seqStrategy(em);
 //            getTeamInMember(em);
 //            setOwnerOfRelationship(em);
+//            relatedEntityAndMappedBy(em);
 
-            Team team = new Team();
-            team.setName("TeamA");
-            em.persist(team);
-
-            MemberOwner member = new MemberOwner();
+            MemberOTM member = new MemberOTM();
             member.setUsername("member1");
-            member.setTeam(team);
+
             em.persist(member);
 
-            team.addMember(member);
+            TeamOTM team = new TeamOTM();
+            team.setName("teamA");
+            team.getMembers().add(member);
 
-            em.flush();
-            em.clear();
+            em.persist(team);
 
             System.out.println("===========================");
-            Team findTeam = em.find(Team.class, team.getId());
-            List<MemberOwner> members = findTeam.getMembers();
-
-            for(MemberOwner m : members){
-                System.out.println("m = " + m.getUsername());
-            }
-            System.out.println("===========================");
-
 
             tx.commit();
 
@@ -70,6 +60,30 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void relatedEntityAndMappedBy(EntityManager em) {
+        Team team = new Team();
+        team.setName("TeamA");
+        em.persist(team);
+
+        MemberOwner member = new MemberOwner();
+        member.setUsername("member1");
+        member.setTeam(team);
+        em.persist(member);
+
+        team.addMember(member);
+
+        em.flush();
+        em.clear();
+
+        System.out.println("===========================");
+        Team findTeam = em.find(Team.class, team.getId());
+        List<MemberOwner> members = findTeam.getMembers();
+
+        for(MemberOwner m : members){
+            System.out.println("m = " + m.getUsername());
+        }
     }
 
     private static void setOwnerOfRelationship(EntityManager em) {
