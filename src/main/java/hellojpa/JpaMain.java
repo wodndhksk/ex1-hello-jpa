@@ -35,17 +35,8 @@ public class JpaMain {
 //            getTeamInMember(em);
 //            setOwnerOfRelationship(em);
 //            relatedEntityAndMappedBy(em);
+            memberOneToMany(em);
 
-            MemberOTM member = new MemberOTM();
-            member.setUsername("member1");
-
-            em.persist(member);
-
-            TeamOTM team = new TeamOTM();
-            team.setName("teamA");
-            team.getMembers().add(member);
-
-            em.persist(team);
 
             System.out.println("===========================");
 
@@ -60,6 +51,19 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void memberOneToMany(EntityManager em) {
+        MemberOTM member = new MemberOTM();
+        member.setUsername("member1");
+
+        em.persist(member);
+
+        TeamOTM team = new TeamOTM();
+        team.setName("teamA");
+        team.getMembers().add(member);
+
+        em.persist(team);
     }
 
     private static void relatedEntityAndMappedBy(EntityManager em) {
