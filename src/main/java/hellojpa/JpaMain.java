@@ -35,8 +35,24 @@ public class JpaMain {
 //            getTeamInMember(em);
 //            setOwnerOfRelationship(em);
 //            relatedEntityAndMappedBy(em);
-            memberOneToMany(em);
+//            memberOneToMany(em);
 
+            Movie movie = new Movie();
+            movie.setActor("aaaa");
+            movie.setActor("bbbb");
+            movie.setName("바람과 함께 사라지다.");
+            movie.setPrice(10000);
+
+            em.persist(movie);
+
+            em.flush();
+            em.clear();
+
+//            Movie findMovie = em.find(Movie.class, movie.getId());
+
+            // 만약 TABLE_PER_CLASS 전략에서 Item 의 Id를 찾는다면 Movie, Album, Book 을 모두 union 하여 select 한다는 단점이 존재
+            Item item = em.find(Item.class, movie.getId());
+            System.out.println("findMovie = " + item);
 
             System.out.println("===========================");
 
