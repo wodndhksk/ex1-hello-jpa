@@ -2,10 +2,8 @@ package hellojpa;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -36,23 +34,13 @@ public class JpaMain {
 //            setOwnerOfRelationship(em);
 //            relatedEntityAndMappedBy(em);
 //            memberOneToMany(em);
+//            inheritanceTypeAndDiscriminatorColumnTest(em);
 
-            Movie movie = new Movie();
-            movie.setActor("aaaa");
-            movie.setActor("bbbb");
-            movie.setName("바람과 함께 사라지다.");
-            movie.setPrice(10000);
-
-            em.persist(movie);
-
-            em.flush();
-            em.clear();
-
-//            Movie findMovie = em.find(Movie.class, movie.getId());
-
-            // 만약 TABLE_PER_CLASS 전략에서 Item 의 Id를 찾는다면 Movie, Album, Book 을 모두 union 하여 select 한다는 단점이 존재
-            Item item = em.find(Item.class, movie.getId());
-            System.out.println("findMovie = " + item);
+            Member member = new Member();
+            member.setUsername("user1");
+            member.setCreateBy1("dd");
+            member.setCreatedDate1(LocalDateTime.now());
+            em.persist(member);
 
             System.out.println("===========================");
 
@@ -67,6 +55,25 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void inheritanceTypeAndDiscriminatorColumnTest(EntityManager em) {
+        Movie movie = new Movie();
+        movie.setActor("aaaa");
+        movie.setActor("bbbb");
+        movie.setName("바람과 함께 사라지다.");
+        movie.setPrice(10000);
+
+        em.persist(movie);
+
+        em.flush();
+        em.clear();
+
+//            Movie findMovie = em.find(Movie.class, movie.getId());
+
+        // 만약 TABLE_PER_CLASS 전략에서 Item 의 Id를 찾는다면 Movie, Album, Book 을 모두 union 하여 select 한다는 단점이 존재
+        Item item = em.find(Item.class, movie.getId());
+        System.out.println("findMovie = " + item);
     }
 
     private static void memberOneToMany(EntityManager em) {
@@ -101,7 +108,7 @@ public class JpaMain {
         Team findTeam = em.find(Team.class, team.getId());
         List<MemberOwner> members = findTeam.getMembers();
 
-        for(MemberOwner m : members){
+        for (MemberOwner m : members) {
             System.out.println("m = " + m.getUsername());
         }
     }
@@ -123,7 +130,7 @@ public class JpaMain {
         MemberOwner finMember = em.find(MemberOwner.class, member.getId());
         List<MemberOwner> members = finMember.getTeam().getMembers();
 
-        for(MemberOwner m : members){
+        for (MemberOwner m : members) {
             System.out.println("memberOwner = " + m.getUsername());
         }
     }
