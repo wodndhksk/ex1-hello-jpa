@@ -1,6 +1,7 @@
 package hellojpa;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -35,12 +36,20 @@ public class JpaMain {
 //            relatedEntityAndMappedBy(em);
 //            memberOneToMany(em);
 //            inheritanceTypeAndDiscriminatorColumnTest(em);
+//            mappingSuperClass(em);
 
-            Member member = new Member();
-            member.setUsername("user1");
-            member.setCreateBy1("dd");
-            member.setCreatedDate1(LocalDateTime.now());
+            MemberOTM member = new MemberOTM();
+            member.setUsername("hello");
             em.persist(member);
+
+            em.flush();
+            em.clear();
+
+//            Member findMember = em.find(Member.class, member.getId());
+            Member refMember = em.getReference(Member.class, member.getId());
+            System.out.println(refMember.getClass());
+            Hibernate.initialize(refMember); // 프록시 강제 초기화 (select 쿼리 발생)
+            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
 
             System.out.println("===========================");
 
@@ -55,6 +64,14 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void mappingSuperClass(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("user1");
+        member.setCreateBy1("dd");
+        member.setCreatedDate1(LocalDateTime.now());
+        em.persist(member);
     }
 
     private static void inheritanceTypeAndDiscriminatorColumnTest(EntityManager em) {
