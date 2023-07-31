@@ -37,21 +37,46 @@ public class JpaMain {
 //            memberOneToMany(em);
 //            inheritanceTypeAndDiscriminatorColumnTest(em);
 //            mappingSuperClass(em);
+//            initProxyTest(emf, em);
 
-            MemberOTM member = new MemberOTM();
-            member.setUsername("hello");
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Team teamB = new Team();
+            teamB.setName("teamB");
+            em.persist(teamB);
+
+
+            Member1 member = new Member1();
+            member.setUsername("member1");
+            member.setTeam(team);
             em.persist(member);
+
+            Member1 member2 = new Member1();
+            member2.setUsername("member2");
+            member2.setTeam(teamB);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-//            Member findMember = em.find(Member.class, member.getId());
-            Member refMember = em.getReference(Member.class, member.getId());
-            System.out.println(refMember.getClass());
-            Hibernate.initialize(refMember); // 프록시 강제 초기화 (select 쿼리 발생)
-            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
+            // 1)
+//            Member1 m = em.find(Member1.class, member.getId());
+//            System.out.println("m = " + m.getId().getClass());
+//            System.out.println("===========================");
+//            m.getTeam().getName(); //초기화 발생
+//            System.out.println("===========================");
 
-            System.out.println("===========================");
+            // 2)
+            /**
+             * 지연 로딩이지만(Member1 에서 Team FetchType.LAZY 상태) join fetch 로 한방 쿼리가 나가는것을 확인할 수 있다.
+             * (지연로딩으로 설정되어 있다면 team 에 대한 값을 사용할때만 select 쿼리가 실행이 된다. (프록시 초기화 하면서 쿼리 실행) )
+             */
+            List<Member1> members = em.createQuery("select m from Member1 m join fetch m.team", Member1.class)
+                    .getResultList();
+
 
             tx.commit();
 
@@ -64,6 +89,21 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void initProxyTest(EntityManagerFactory emf, EntityManager em) {
+        MemberOTM member = new MemberOTM();
+        member.setUsername("hello");
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+//            Member findMember = em.find(Member.class, member.getId());
+        Member refMember = em.getReference(Member.class, member.getId());
+        System.out.println(refMember.getClass());
+        Hibernate.initialize(refMember); // 프록시 강제 초기화 (select 쿼리 발생)
+        System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
     }
 
     private static void mappingSuperClass(EntityManager em) {
