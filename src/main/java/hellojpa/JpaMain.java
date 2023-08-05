@@ -39,25 +39,13 @@ public class JpaMain {
 //            mappingSuperClass(em);
 //            initProxyTest(emf, em);
 //            fetchTypeLazyTest(em);
+//            cascadeTest(em);
+            Member1 member = new Member1();
+            member.setUsername("memberAA");
+            member.setHomeAddress(new Address("city" ,"street", "zipcode"));
+            member.setWorkPeriod(new Period());
 
-            Child child1 = new Child();
-            Child child2 = new Child();
-
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-
-            em.persist(parent);
-            //Parent 엔티티의 Child 값에 CascadeType.ALL 설정으로 em.persist(parent) 만 해도 적용됨.
-//            em.persist(child1);
-//            em.persist(child1);
-
-            em.flush();
-            em.clear();
-
-            Parent findParent = em.find(Parent.class, parent.getId());
-            findParent.getChildList().remove(0);
-
+            em.persist(member);
 
 
             tx.commit();
@@ -71,6 +59,26 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void cascadeTest(EntityManager em) {
+        Child child1 = new Child();
+        Child child2 = new Child();
+
+        Parent parent = new Parent();
+        parent.addChild(child1);
+        parent.addChild(child2);
+
+        em.persist(parent);
+        //Parent 엔티티의 Child 값에 CascadeType.ALL 설정으로 em.persist(parent) 만 해도 적용됨.
+//            em.persist(child1);
+//            em.persist(child1);
+
+        em.flush();
+        em.clear();
+
+        Parent findParent = em.find(Parent.class, parent.getId());
+        findParent.getChildList().remove(0);
     }
 
     private static void fetchTypeLazyTest(EntityManager em) {
