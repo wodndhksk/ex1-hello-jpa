@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -40,38 +41,66 @@ public class JpaMain {
 //            initProxyTest(emf, em);
 //            fetchTypeLazyTest(em);
 //            cascadeTest(em);
-
-            /**
-             * 값 타입 복사
-             */
-            Address address = new Address("city" ,"street", "zipcode");
+//            immutableObject(em);
 
             Member1 member = new Member1();
             member.setUsername("memberA");
-            member.setHomeAddress(address);
-//            member.setWorkPeriod(new Period());
+            member.setHomeAddress(new Address("city1", "street", "10000"));
+
+            member.getFavoriteFood().add("치킨");
+            member.getFavoriteFood().add("족발");
+            member.getFavoriteFood().add("피자");
+
+            // Address 대신 AddressEntity entity 를 생성하여 사용 (delete insert 가 아닌 update 쿼리 발생 (최적화) )
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+
             em.persist(member);
 
+            em.flush();
+            em.clear();
 
-            // 값 타입을 setter를 사용하여 수정하는것은 지양해야한다. (임베디드는 객체타입이다. 여러곳에서 해당 임베디드를 공유하여 사용할때
-            // 객체의 공유참조로 인하여 참조 값이 수정되면 참조하고 있는 모든곳에서 수정이 된다. 따라서 임베디드 타입에서 setter를 사용하지 않음으로 써
-            // 수정을 불가하게(불변 객체) 만들어서 객체 타입의 한계를 사전예방을 하는 효과를 볼 수 있다.  다만 값의 수정이 필요할 경우 생성자를 통해 변경시마다
-            // 새로운 객체를 생성하여 생성자 파라미터 값으로 수정하는 방법을 사용할 수 있다.
-            // ****** 불변이라는 작은 제약으로 부작용이라는 큰 재앙을 막을 수 있다. ******
+            /**
+             * 값 타입 컬렉션은 기본적으로 지연로딩임을 확인할 수 있다.
+             * 또한 Cascade, 고아객체 제거 기능을 필수로 가지고 있다.
+             */
+            // ====== 조회
+            Member1 findMember = em.find(Member1.class, member.getId());
+            System.out.println("member = " + findMember);
 
-            Address newAddress = new Address("new City", address.getStreet(), address.getZipcode());
-            member.setHomeAddress(newAddress);
+            System.out.println("=============================");
+
+            Set<String> favoriteFood = findMember.getFavoriteFood();
+            for (String food : favoriteFood) {
+                System.out.println("food = " + food);
+            }
 
 
-            // setter를 사용하여 수정하는 부분은 주석처리
-//            Address newAddress = new Address(address.getCity() , address.getStreet(), address.getZipcode());
-//
-//            Member1 member2 = new Member1();
-//            member2.setUsername("memberB");
-//            member2.setHomeAddress(newAddress);
-//            em.persist(member2);
-//
-//            member.getHomeAddress().setCity("new city"); // 첫번째 member 주소 수정
+            /*
+            List<Address> addressHistory = findMember.getAddressHistory();
+            for (Address address : addressHistory) {
+                System.out.println("address = " + address.getCity());
+            }
+
+
+            // ===== 수정
+            // 주소 변경
+            Address findAddr = findMember.getHomeAddress();
+            member.setHomeAddress(new Address("newCity", findAddr.getStreet(), findAddr.getZipcode()));
+
+            // 치킨 -> 한식으로 변경
+            findMember.getFavoriteFood().remove("치킨");
+            findMember.getFavoriteFood().add("한식");
+
+            // addr history 변경
+
+            //ADDRESS 테이블의 데이터 전부 delete 후 삭제되지 않은 데이터와 변경된 데이터를 insert(즉, insert 쿼리 2번 실행됨)
+            //이러한 경우에는 값 타입 컬렉션 대신 엔티 일대다 관계를 고려.
+
+            findMember.getAddressHistory().remove(new Address("old1", findAddr.getStreet(), findAddr.getZipcode()));
+            findMember.getAddressHistory().add(new Address("newCity1", findAddr.getStreet(), findAddr.getZipcode()));
+
+            */
 
             tx.commit();
 
@@ -82,8 +111,45 @@ public class JpaMain {
         }
 
 
+
+
+
         em.close();
         emf.close();
+    }
+
+    private static void immutableObject(EntityManager em) {
+        /**
+         * 값 타입 복사
+         */
+        Address address = new Address("city" ,"street", "zipcode");
+
+        Member1 member = new Member1();
+        member.setUsername("memberA");
+        member.setHomeAddress(address);
+//            member.setWorkPeriod(new Period());
+        em.persist(member);
+
+
+        // 값 타입을 setter를 사용하여 수정하는것은 지양해야한다. (임베디드는 객체타입이다. 여러곳에서 해당 임베디드를 공유하여 사용할때
+        // 객체의 공유참조로 인하여 참조 값이 수정되면 참조하고 있는 모든곳에서 수정이 된다. 따라서 임베디드 타입에서 setter를 사용하지 않음으로 써
+        // 수정을 불가하게(불변 객체) 만들어서 객체 타입의 한계를 사전예방을 하는 효과를 볼 수 있다.  다만 값의 수정이 필요할 경우 생성자를 통해 변경시마다
+        // 새로운 객체를 생성하여 생성자 파라미터 값으로 수정하는 방법을 사용할 수 있다.
+        // ****** 불변이라는 작은 제약으로 부작용이라는 큰 재앙을 막을 수 있다. ******
+
+        Address newAddress = new Address("new City", address.getStreet(), address.getZipcode());
+        member.setHomeAddress(newAddress);
+
+
+        // setter를 사용하여 수정하는 부분은 주석처리
+//            Address newAddress = new Address(address.getCity() , address.getStreet(), address.getZipcode());
+//
+//            Member1 member2 = new Member1();
+//            member2.setUsername("memberB");
+//            member2.setHomeAddress(newAddress);
+//            em.persist(member2);
+//
+//            member.getHomeAddress().setCity("new city"); // 첫번째 member 주소 수정
     }
 
     private static void cascadeTest(EntityManager em) {

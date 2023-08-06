@@ -4,6 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,6 +31,20 @@ public class Member1 {
     @Embedded
     private Address homeAddress;
 
+    @ElementCollection // fetch = LAZY : 지연로딩 디폴트
+    @CollectionTable(name = "FAVORITE_FOOD", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFood = new HashSet<>();
+
+//    @ElementCollection // fetch = LAZY : 지연로딩 디폴트
+//    @CollectionTable(name = "ADDRESS", joinColumns = @JoinColumn(name = "MEMBER_ID"))
+//    private List<Address> addressHistory = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MEMBER_ID")
+    private List<AddressEntity> addressHistory = new ArrayList<>();
+
+
     /**
      * 한 엔티티 안에서 같은 값 타입(Address)을 사용하는 방법
      */
@@ -37,4 +55,6 @@ public class Member1 {
             @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
     })
     private Address workAddress;
+
+
 }
