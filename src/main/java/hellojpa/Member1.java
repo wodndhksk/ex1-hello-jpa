@@ -31,10 +31,10 @@ public class Member1 {
      * 한 엔티티 안에서 같은 값 타입(Address)을 사용하는 방법
      */
     @Embedded
-    @AttributeOverrides(
+    @AttributeOverrides({
             @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
             @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
             @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
-    )
+    })
     private Address workAddress;
 }

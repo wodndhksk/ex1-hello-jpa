@@ -40,13 +40,38 @@ public class JpaMain {
 //            initProxyTest(emf, em);
 //            fetchTypeLazyTest(em);
 //            cascadeTest(em);
-            Member1 member = new Member1();
-            member.setUsername("memberAA");
-            member.setHomeAddress(new Address("city" ,"street", "zipcode"));
-            member.setWorkPeriod(new Period());
 
+            /**
+             * 값 타입 복사
+             */
+            Address address = new Address("city" ,"street", "zipcode");
+
+            Member1 member = new Member1();
+            member.setUsername("memberA");
+            member.setHomeAddress(address);
+//            member.setWorkPeriod(new Period());
             em.persist(member);
 
+
+            // 값 타입을 setter를 사용하여 수정하는것은 지양해야한다. (임베디드는 객체타입이다. 여러곳에서 해당 임베디드를 공유하여 사용할때
+            // 객체의 공유참조로 인하여 참조 값이 수정되면 참조하고 있는 모든곳에서 수정이 된다. 따라서 임베디드 타입에서 setter를 사용하지 않음으로 써
+            // 수정을 불가하게(불변 객체) 만들어서 객체 타입의 한계를 사전예방을 하는 효과를 볼 수 있다.  다만 값의 수정이 필요할 경우 생성자를 통해 변경시마다
+            // 새로운 객체를 생성하여 생성자 파라미터 값으로 수정하는 방법을 사용할 수 있다.
+            // ****** 불변이라는 작은 제약으로 부작용이라는 큰 재앙을 막을 수 있다. ******
+
+            Address newAddress = new Address("new City", address.getStreet(), address.getZipcode());
+            member.setHomeAddress(newAddress);
+
+
+            // setter를 사용하여 수정하는 부분은 주석처리
+//            Address newAddress = new Address(address.getCity() , address.getStreet(), address.getZipcode());
+//
+//            Member1 member2 = new Member1();
+//            member2.setUsername("memberB");
+//            member2.setHomeAddress(newAddress);
+//            em.persist(member2);
+//
+//            member.getHomeAddress().setCity("new city"); // 첫번째 member 주소 수정
 
             tx.commit();
 
