@@ -42,38 +42,16 @@ public class JpaMain {
 //            fetchTypeLazyTest(em);
 //            cascadeTest(em);
 //            immutableObject(em);
+//            immutableObjectRefactor(em);
 
-            Member1 member = new Member1();
-            member.setUsername("memberA");
-            member.setHomeAddress(new Address("city1", "street", "10000"));
+            List<Member1> result = em.createQuery("select m from Member1 m where m.username like '%kim'",
+                            Member1.class)
+                    .getResultList();
 
-            member.getFavoriteFood().add("치킨");
-            member.getFavoriteFood().add("족발");
-            member.getFavoriteFood().add("피자");
-
-            // Address 대신 AddressEntity entity 를 생성하여 사용 (delete insert 가 아닌 update 쿼리 발생 (최적화) )
-            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
-            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
-
-            em.persist(member);
-
-            em.flush();
-            em.clear();
-
-            /**
-             * 값 타입 컬렉션은 기본적으로 지연로딩임을 확인할 수 있다.
-             * 또한 Cascade, 고아객체 제거 기능을 필수로 가지고 있다.
-             */
-            // ====== 조회
-            Member1 findMember = em.find(Member1.class, member.getId());
-            System.out.println("member = " + findMember);
-
-            System.out.println("=============================");
-
-            Set<String> favoriteFood = findMember.getFavoriteFood();
-            for (String food : favoriteFood) {
-                System.out.println("food = " + food);
+            for (Member1 m : result) {
+                System.out.println("member = " + m);
             }
+
 
 
             /*
@@ -116,6 +94,40 @@ public class JpaMain {
 
         em.close();
         emf.close();
+    }
+
+    private static void immutableObjectRefactor(EntityManager em) {
+        Member1 member = new Member1();
+        member.setUsername("memberA");
+        member.setHomeAddress(new Address("city1", "street", "10000"));
+
+        member.getFavoriteFood().add("치킨");
+        member.getFavoriteFood().add("족발");
+        member.getFavoriteFood().add("피자");
+
+        // Address 대신 AddressEntity entity 를 생성하여 사용 (delete insert 가 아닌 update 쿼리 발생 (최적화) )
+        member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+        member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        /**
+         * 값 타입 컬렉션은 기본적으로 지연로딩임을 확인할 수 있다.
+         * 또한 Cascade, 고아객체 제거 기능을 필수로 가지고 있다.
+         */
+        // ====== 조회
+        Member1 findMember = em.find(Member1.class, member.getId());
+        System.out.println("member = " + findMember);
+
+        System.out.println("=============================");
+
+        Set<String> favoriteFood = findMember.getFavoriteFood();
+        for (String food : favoriteFood) {
+            System.out.println("food = " + food);
+        }
     }
 
     private static void immutableObject(EntityManager em) {
